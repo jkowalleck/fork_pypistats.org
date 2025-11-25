@@ -85,6 +85,35 @@ Downloads last month:
             var data =
             {{ plots|tojson }}
 
+            var colors = {
+                default: {
+                    paper_bgcolor: "#fff",
+                    plot_bgcolor: "rgba(175, 175, 175, 0.2)",
+                    legend: {
+                        bgcolor: "#e7e7e7"
+                    },
+                    xaxis: {
+                        gridcolor: "#FFF"
+                    },
+                    titlefont: {
+                        color: "#7f7f7f"
+                    },
+                    linecolor: "rgba(148, 148, 148, 1)",
+                    yaxis: {
+                        gridcolor: "#FFF",
+                        linecolor: "rgba(148, 148, 148, 1)"
+                    }
+                },
+                dark: {}
+            };
+
+            var colorTheme = 'default';
+            if ( window.matchMedia ) {
+                var mmq = window.matchMedia('(prefers-color-scheme: dark)');
+                if (mmq.matches) { colorTheme = 'dark'; }
+                // mmq.addEventListener(change, )
+            }
+
             for (plt in data) {
                 var gd3 = Plotly.d3.select('section').append('div').style({
                     width: WIDTH_IN_PERCENT_OF_PARENT + '%',
@@ -93,7 +122,12 @@ Downloads last month:
                 })
                 var gd = gd3.node()
                 divelems.push(gd)
-                Plotly.newPlot(divelems[divelems.length - 1], data[plt].data, data[plt].layout, data[plt].config);
+
+                var layput = $.extend(true, {}, data[plt].layout, colors[colorTheme])
+                var validated = Plotly.validate(data[plt].data, layput);
+                console.log('validated', validated)
+
+                Plotly.newPlot(divelems[divelems.length - 1], data[plt].data, layout, data[plt].config);
             }
             window.onresize = function () {
                 for (chart in divelems) {
