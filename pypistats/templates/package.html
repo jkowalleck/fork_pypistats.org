@@ -87,24 +87,88 @@ Downloads last month:
 
             var colors = {
                 default: {
-                    paper_bgcolor: "#fff",
-                    plot_bgcolor: "rgba(175, 175, 175, 0.2)",
+                    paper_bgcolor: '#fff',
+                    plot_bgcolor: 'rgba(175, 175, 175, 0.2)',
                     legend: {
-                        bgcolor: "#e7e7e7"
+                        bgcolor: '#e7e7e7'
                     },
                     xaxis: {
-                        gridcolor: "#FFF"
+                        gridcolor: '#FFF'
                     },
                     titlefont: {
-                        color: "#7f7f7f"
+                        color: '#7f7f7f'
                     },
-                    linecolor: "rgba(148, 148, 148, 1)",
+                    linecolor: 'rgba(148, 148, 148, 1)',
                     yaxis: {
-                        gridcolor: "#FFF",
-                        linecolor: "rgba(148, 148, 148, 1)"
+                        gridcolor: '#FFF',
+                        linecolor: 'rgba(148, 148, 148, 1)'
                     }
                 },
-                dark: {}
+                dark: {
+                    // page / canvas
+                    paper_bgcolor: '#121212',
+                    plot_bgcolor: 'rgba(30,30,30,0.9)',
+                    // overall font for plotly elements
+                    font: { color: "#e0e0e0" },
+                    // title / annotations
+                    titlefont: { color: '#ffffff' },
+                    // legend
+                    legend: {
+                        bgcolor: '#1a1a1a',
+                        bordercolor: '#333333',
+                        font: { color: '#bbbbbb' }
+                    },
+                    // axis styling
+                    xaxis: {
+                        gridcolor: '#333333',
+                        linecolor: 'rgba(148,148,148,0.6)',
+                        tickcolor: '#cccccc',
+                        tickfont: { color: '#cccccc' },
+                        rangeselector: {
+                            bgcolor: 'green',
+                            activecolor: 'red'
+                        }
+                    },
+                    yaxis: {
+                        gridcolor: "#333333",
+                        linecolor: "rgba(148,148,148,0.6)",
+                        tickcolor: "#cccccc",
+                        tickfont: { color: "#cccccc" }
+                    },
+                    // default trace / line color fallback
+                    linecolor: "rgba(224,224,224,0.9)",
+                    // trace color palette (site link & button accents first)
+                    colorway: [
+                        "#4da6ff",  // link blue
+                        "#e08c43",  // button orange
+                        "#7fb77e",  // muted green
+                        "#c06cff",  // purple
+                        "#ffd166",  // warm yellow
+                        "#ff6b6b"   // red accent
+                    ],
+                    // hover/tooltip styling
+                    hoverlabel: {
+                        bgcolor: "#222222",
+                        bordercolor: "#444444",
+                        font: { color: "#e0e0e0" }
+                    },
+                    // Plotly UI elements (modebar / updatemenus)
+                    modebar: {
+                        bgcolor: "#1a1a1a",       // panel background
+                        color: "#bbbbbb",         // icon color
+                        activecolor: "#ffffff",   // icon color when active/hover
+                        bordercolor: "#333333"    // subtle border to match header
+                    },
+                    updatemenus: {
+                        bgcolor: "#1a1a1a",
+                        bordercolor: "#333333",
+                        font: { color: "#bbbbbb" },
+                        activebgcolor: "#2a2a2a",
+                        activecolor: "#ffffff"
+                    },
+                    // ensure separators and small UI elements are visible
+                    separatorcolor: "#333333"
+                }
             };
 
             var colorTheme = 'default';
@@ -123,8 +187,8 @@ Downloads last month:
                 var gd = gd3.node()
                 divelems.push(gd)
 
-                var layput = $.extend(true, {}, data[plt].layout, colors[colorTheme])
-                var validated = Plotly.validate(data[plt].data, layput);
+                var layout = $.extend(true, {}, data[plt].layout, colors[colorTheme])
+                var validated = Plotly.validate(data[plt].data, layout);
                 console.log('validated', validated)
 
                 Plotly.newPlot(divelems[divelems.length - 1], data[plt].data, layout, data[plt].config);
