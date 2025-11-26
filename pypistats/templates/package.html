@@ -160,7 +160,7 @@ Downloads last month:
             if (window.matchMedia) {
                 var colorTheme_mmq = window.matchMedia('(prefers-color-scheme: dark)');
                 if (colorTheme_mmq.matches) { colorTheme = 'dark'; }
-                colorTheme_mmq.addEventListener('change', (e) => {
+                colorTheme_mmq.addEventListener('change', function (e) {
                     colorTheme = e.matches ? 'dark' : 'light';
                     for (var d in divelems) {
                         Plotly.relayout(divelems[d], $.extend(true, {}, data[d].layout, colors[colorTheme]))
