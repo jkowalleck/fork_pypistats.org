@@ -105,28 +105,24 @@ Downloads last month:
                     }
                 },
                 dark: {
-                    // page / canvas
                     paper_bgcolor: '#121212',
                     plot_bgcolor: 'rgba(30,30,30,0.9)',
-                    // overall font for plotly elements
                     font: { color: "#e0e0e0" },
-                    // title / annotations
                     titlefont: { color: '#ffffff' },
-                    // legend
                     legend: {
                         bgcolor: '#1a1a1a',
                         bordercolor: '#333333',
                         font: { color: '#bbbbbb' }
                     },
-                    // axis styling
                     xaxis: {
                         gridcolor: '#333333',
                         linecolor: 'rgba(148,148,148,0.6)',
                         tickcolor: '#cccccc',
                         tickfont: { color: '#cccccc' },
                         rangeselector: {
-                            bgcolor: 'green',
-                            activecolor: 'red'
+                            bgcolor: 'rgb(30,30,30)',
+                            activecolor: '#333333',
+                            bordercolor: 'red'
                         }
                     },
                     yaxis: {
@@ -135,29 +131,25 @@ Downloads last month:
                         tickcolor: "#cccccc",
                         tickfont: { color: "#cccccc" }
                     },
-                    // default trace / line color fallback
                     linecolor: "rgba(224,224,224,0.9)",
-                    // trace color palette (site link & button accents first)
                     colorway: [
-                        "#4da6ff",  // link blue
-                        "#e08c43",  // button orange
-                        "#7fb77e",  // muted green
-                        "#c06cff",  // purple
-                        "#ffd166",  // warm yellow
-                        "#ff6b6b"   // red accent
+                        "#4da6ff",
+                        "#e08c43",
+                        "#7fb77e",
+                        "#c06cff",
+                        "#ffd166",
+                        "#ff6b6b"
                     ],
-                    // hover/tooltip styling
                     hoverlabel: {
                         bgcolor: "#222222",
                         bordercolor: "#444444",
                         font: { color: "#e0e0e0" }
                     },
-                    // Plotly UI elements (modebar / updatemenus)
                     modebar: {
-                        bgcolor: "#1a1a1a",       // panel background
-                        color: "#bbbbbb",         // icon color
-                        activecolor: "#ffffff",   // icon color when active/hover
-                        bordercolor: "#333333"    // subtle border to match header
+                        bgcolor: "#1a1a1a",
+                        color: "#bbbbbb",
+                        activecolor: "#ffffff",
+                        bordercolor: "#333333"
                     },
                     updatemenus: {
                         bgcolor: "#1a1a1a",
@@ -166,7 +158,6 @@ Downloads last month:
                         activebgcolor: "#2a2a2a",
                         activecolor: "#ffffff"
                     },
-                    // ensure separators and small UI elements are visible
                     separatorcolor: "#333333"
                 }
             };
