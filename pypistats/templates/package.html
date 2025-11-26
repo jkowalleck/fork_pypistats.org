@@ -85,23 +85,34 @@ Downloads last month:
             {{ plots|tojson }}
 
             var colors = {
-                default: {
+                light: {
                     paper_bgcolor: '#fff',
                     plot_bgcolor: 'rgba(175, 175, 175, 0.2)',
+                    font: { color: undefined },
+                    titlefont: { color: '#7f7f7f' },
                     legend: {
-                        bgcolor: '#e7e7e7'
+                        bgcolor: '#e7e7e7',
+                        font: { color: undefined }
                     },
                     xaxis: {
-                        gridcolor: '#FFF'
+                        gridcolor: '#FFF',
+                        linecolor: undefined,
+                        tickcolor: undefined,
+                        tickfont: { color: undefined },
+                        rangeselector: {
+                            bgcolor: undefined,
+                            activecolor: undefined,
+                            bordercolor: undefined
+                        }
                     },
-                    titlefont: {
-                        color: '#7f7f7f'
-                    },
-                    linecolor: 'rgba(148, 148, 148, 1)',
                     yaxis: {
                         gridcolor: '#FFF',
-                        linecolor: 'rgba(148, 148, 148, 1)'
-                    }
+                        linecolor: 'rgba(148, 148, 148, 1)',
+                        tickcolor: undefined,
+                        tickfont: { color: undefined }
+                    },
+                    linecolor: 'rgba(148, 148, 148, 1)',
+                    colorway: undefined
                 },
                 dark: {
                     paper_bgcolor: '#121212',
@@ -145,14 +156,21 @@ Downloads last month:
                 }
             };
 
-            var colorTheme = 'default';
+            var colorTheme = 'light';
+            var colorTheme_mmq = undefined;
             if ( window.matchMedia ) {
-                var mmq = window.matchMedia('(prefers-color-scheme: dark)');
-                if (mmq.matches) { colorTheme = 'dark'; }
-                // mmq.addEventListener(change, )
+                colorTheme_mmq = window.matchMedia('(prefers-color-scheme: dark)');
+                if (colorTheme_mmq.matches) { colorTheme = 'dark'; }
+                colorTheme_mmq.addEventListener('change', (e) => {
+                    colorTheme = e.matches ? 'dark' : 'light';
+                    for (var d in divelems) {
+                        var layout = $.extend(true, {}, data[d].layout, colors[colorTheme]);
+                        Plotly.relayout(divelems[d], layout)
+                    }
+                });
             }
 
-            for (plt in data) {
+            for (var plt in data) {
                 var gd3 = Plotly.d3.select('section').append('div').style({
                     width: WIDTH_IN_PERCENT_OF_PARENT + '%',
                     'margin-left': (100 - WIDTH_IN_PERCENT_OF_PARENT) / 2 + '%',
@@ -161,14 +179,11 @@ Downloads last month:
                 var gd = gd3.node()
                 divelems.push(gd)
 
-                var layout = $.extend(true, {}, data[plt].layout, colors[colorTheme])
-                var validated = Plotly.validate(data[plt].data, layout);
-                console.log('validated', validated)
-
+                var layout = $.extend(true, {}, data[plt].layout, colors[colorTheme]);
                 Plotly.newPlot(divelems[divelems.length - 1], data[plt].data, layout, data[plt].config);
             }
             window.onresize = function () {
-                for (chart in divelems) {
+                for (var chart in divelems) {
                     Plotly.Plots.resize(divelems[chart]);
                 }
             };
