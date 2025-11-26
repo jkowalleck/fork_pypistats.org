@@ -164,8 +164,7 @@ Downloads last month:
                 colorTheme_mmq.addEventListener('change', (e) => {
                     colorTheme = e.matches ? 'dark' : 'light';
                     for (var d in divelems) {
-                        var layout = $.extend(true, {}, data[d].layout, colors[colorTheme]);
-                        Plotly.relayout(divelems[d], layout)
+                        Plotly.relayout(divelems[d], $.extend(true, {}, data[d].layout, colors[colorTheme]))
                     }
                 });
             }
@@ -179,8 +178,8 @@ Downloads last month:
                 var gd = gd3.node()
                 divelems.push(gd)
 
-                var layout = $.extend(true, {}, data[plt].layout, colors[colorTheme]);
-                Plotly.newPlot(divelems[divelems.length - 1], data[plt].data, layout, data[plt].config);
+                Plotly.newPlot(divelems[divelems.length - 1], data[plt].data,
+                    $.extend(true, {}, data[plt].layout, colors[colorTheme]), data[plt].config);
             }
             window.onresize = function () {
                 for (var chart in divelems) {
