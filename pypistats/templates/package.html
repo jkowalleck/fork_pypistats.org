@@ -179,7 +179,7 @@ Downloads last month:
                 divelems.push(gd)
 
                 Plotly.newPlot(divelems[divelems.length - 1], data[plt].data,
-                    $.extend(true, {}, data[plt].layout, colors[colorTheme]), data[plt].config);
+                    $.extend(true, {}, data[plt].layout, colors[colorTheme]), data[plt].config)
             }
             window.onresize = function () {
                 for (var chart in divelems) {
