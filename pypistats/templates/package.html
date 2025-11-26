@@ -157,9 +157,8 @@ Downloads last month:
             };
 
             var colorTheme = 'light';
-            var colorTheme_mmq = undefined;
-            if ( window.matchMedia ) {
-                colorTheme_mmq = window.matchMedia('(prefers-color-scheme: dark)');
+            if (window.matchMedia) {
+                var colorTheme_mmq = window.matchMedia('(prefers-color-scheme: dark)');
                 if (colorTheme_mmq.matches) { colorTheme = 'dark'; }
                 colorTheme_mmq.addEventListener('change', (e) => {
                     colorTheme = e.matches ? 'dark' : 'light';
