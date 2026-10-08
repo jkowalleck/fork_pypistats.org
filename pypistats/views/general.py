@@ -13,6 +13,10 @@ from flask import redirect
 from flask import render_template
 from flask import request
 from flask_wtf import FlaskForm
+from packaging.markers import Variable
+from packaging.requirements import InvalidRequirement
+from packaging.requirements import Requirement
+from packaging.utils import canonicalize_name
 from wtforms import StringField
 from wtforms.validators import DataRequired
 
@@ -27,6 +31,39 @@ blueprint = Blueprint("general", __name__, template_folder="templates")
 
 
 MODELS = [OverallDownloadCount, PythonMajorDownloadCount, PythonMinorDownloadCount, SystemDownloadCount]
+
+
+def _marker_mentions_extra(marker):
+    if marker is None:
+        return False
+
+    def _contains_extra(markers):
+        for marker_part in markers:
+            if isinstance(marker_part, list):
+                if _contains_extra(marker_part):
+                    return True
+            elif isinstance(marker_part, tuple) and isinstance(marker_part[0], Variable):
+                if marker_part[0].value == "extra":
+                    return True
+        return False
+
+    return _contains_extra(marker._markers)
+
+
+def _split_dependencies(requires_dist):
+    requires, optional = set(), set()
+    for dependency in requires_dist:
+        try:
+            requirement = Requirement(dependency)
+        except InvalidRequirement:
+            package_name = re.split(r"[^0-9a-zA-Z_.-]+", dependency.lower())[0]
+        else:
+            package_name = canonicalize_name(requirement.name)
+            if _marker_mentions_extra(requirement.marker):
+                optional.add(package_name)
+                continue
+        requires.add(package_name)
+    return sorted(requires), sorted(optional)
 
 
 class PackageSearchForm(FlaskForm):
@@ -115,22 +152,13 @@ def package_page(package):
         try:
             metadata = requests.get(f"https://pypi.python.org/pypi/{package}/json", timeout=5).json()
             if metadata["info"].get("requires_dist", None):
-                requires, optional = set(), set()
-                for dependency in metadata["info"]["requires_dist"]:
-                    package_name = re.split(r"[^0-9a-zA-Z_.-]+", dependency.lower())[0]
-                    if "; extra ==" in dependency:
-                        optional.add(package_name)
-                    else:
-                        requires.add(package_name)
-                metadata["requires"] = sorted(requires)
-                metadata["optional"] = sorted(optional)
+                metadata["requires"], metadata["optional"] = _split_dependencies(metadata["info"]["requires_dist"])
             author = metadata["info"].get("author")
             if author is None:
                 authors = metadata["info"].get("author_email")
                 if authors:
                     author = ", ".join([a.strip().rsplit(maxsplit=1)[0] for a in authors.split(",")])
                     metadata["author"] = author
-
         except Exception:
             pass
 
