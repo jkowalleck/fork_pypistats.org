@@ -106,7 +106,7 @@ PyPIStats.org is a Flask-based web application that provides analytics and visua
 
 ### Setup:
 ```bash
-make pypistats  # Launch complete dev environment with docker-compose
+make pypistats  # Launch complete dev environment with Docker Compose
 ```
 
 ### Project Structure:

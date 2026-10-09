@@ -1,12 +1,12 @@
 # format everything
 fmt:
-	docker-compose run --rm web isort .
-	docker-compose run --rm web black .
+	docker compose run --rm web isort .
+	docker compose run --rm web black .
 
 # check formatting without modifying files
 check-fmt:
-	docker-compose run --rm web isort . --check-only
-	docker-compose run --rm web black . --check
+	docker compose run --rm web isort . --check-only
+	docker compose run --rm web black . --check
 
 # run functional tests in the development image against PostgreSQL
 .PHONY: test
@@ -18,13 +18,13 @@ test:
 # launch the application in docker-compose
 .PHONY: pypistats
 pypistats:
-	docker-compose down
-	docker-compose build
-	docker-compose up
+	docker compose down
+	docker compose build
+	docker compose up
 
 # bring down the application and destroy the db volumes
 cleanup:
-	docker-compose down -v
+	docker compose down -v
 
 # setup a local environment
 setup:
