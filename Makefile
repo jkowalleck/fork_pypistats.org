@@ -8,6 +8,13 @@ check-fmt:
 	docker-compose run --rm web isort . --check-only
 	docker-compose run --rm web black . --check
 
+# run functional tests in the development image against PostgreSQL
+.PHONY: test
+test:
+	docker compose up -d --wait postgresql
+	docker compose run --build --rm --no-deps -T --entrypoint python web -m pytest -q \
+		--postgresql-host=postgresql --postgresql-port=5432 --postgresql-user=admin --postgresql-password=root
+
 # launch the application in docker-compose
 .PHONY: pypistats
 pypistats:
@@ -26,9 +33,10 @@ setup:
 	pip install -r requirements-dev.txt
 
 # update requirements files
+.PHONY: update-deps
 update-deps:
-	pip-compile --generate-hashes --resolver=backtracking requirements.in -o requirements.txt
-	pip-compile --generate-hashes --resolver=backtracking requirements-dev.in -o requirements-dev.txt
+	pip-compile --upgrade --generate-hashes --resolver=backtracking requirements.in -o requirements.txt
+	pip-compile --upgrade --allow-unsafe --generate-hashes --resolver=backtracking requirements-dev.in -o requirements-dev.txt
 
 
 # port forward flower
