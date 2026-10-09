@@ -159,7 +159,7 @@ def package_page(package):
         recent[r.category] = r.downloads
 
     # PyPI metadata
-    metadata = None
+    metadata = dict()
     if package != "__all__":
         try:
             metadata = requests.get(f"https://pypi.python.org/pypi/{package}/json", timeout=5).json()
@@ -171,6 +171,7 @@ def package_page(package):
 
     # Get data from db
     model_data = []
+    use_smoothing = request.args.get("smooth") is not None
     for model in MODELS:
         records = (
             model.query.filter_by(package=package)
@@ -191,7 +192,11 @@ def package_page(package):
 
         for metric in metrics:
             model_data.append(
-                {"metric": metric, "name": model.__tablename__, "data": data_function[metric](records, category_key)}
+                {
+                    "metric": metric,
+                    "name": model.__tablename__,
+                    "data": data_function[metric](records, category_key=category_key, use_smoothing=use_smoothing),
+                }
             )
 
     # Build the plots
@@ -240,7 +245,29 @@ def package_page(package):
 
         plots.append(plot)
 
-    return render_template("package.html", package=package, plots=plots, metadata=metadata, recent=recent, user=g.user)
+    return render_template(
+        "package.html",
+        package=package,
+        plots=plots,
+        metadata=metadata,
+        recent=recent,
+        user=g.user,
+        use_smoothing=use_smoothing,
+    )
+
+
+def smooth_data(data, window=7):
+    # Ensure data is sorted by date
+    data["x"], data["y"] = zip(*[(x, y) for x, y in sorted(zip(data["x"], data["y"]), key=lambda pair: pair[0])])
+    # Smooth data on a rolling window
+    smoothed_data = deepcopy(data)
+    smoothed_data["y"] = list(smoothed_data["y"])
+    for i in range(len(data["y"])):
+        window_start = max(0, i - window // 2)
+        window_end = min(len(data["y"]), i + window // 2 + 1)
+        window_data = data["y"][window_start:window_end]
+        smoothed_data["y"][i] = sum(window_data) / len(window_data)
+    return smoothed_data
 
 
 def python_minor_key(version):
@@ -252,7 +279,7 @@ def python_minor_key(version):
     return key
 
 
-def get_download_data(records, category_key=None):
+def get_download_data(records, category_key=None, use_smoothing=False):
     """Organize the data for the absolute plots."""
     data = defaultdict(lambda: {"x": [], "y": []})
 
@@ -301,10 +328,16 @@ def get_download_data(records, category_key=None):
             if category not in date_categories:
                 data[category]["x"].append(str(records[-1].date))
                 data[category]["y"].append(0)
+
+    if use_smoothing:
+        # Smooth data using a 7-day window
+        for category in all_categories:
+            data[category] = smooth_data(data[category])
+
     return data
 
 
-def get_proportion_data(records, category_key=None):
+def get_proportion_data(records, category_key=None, use_smoothing=False):
     """Organize the data for the fill plots."""
     data = defaultdict(lambda: {"x": [], "y": [], "text": []})
 
@@ -348,6 +381,11 @@ def get_proportion_data(records, category_key=None):
                 value = date_categories[category] / total
                 data[category]["y"].append(value)
                 data[category]["text"].append("{0:.2f}%".format(value) + " = {:,}".format(date_categories[category]))
+
+    if use_smoothing:
+        # Smooth data using a 7-day window
+        for category in all_categories:
+            data[category] = smooth_data(data[category])
 
     return data
 
